@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2"
-
 	"backend/internal/database"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 type FiberServer struct {
@@ -21,6 +21,9 @@ func New() *FiberServer {
 
 		db: database.New(),
 	}
+
+	server.App.Use(cors.New())
+	server.db.Migrate()
 
 	return server
 }
