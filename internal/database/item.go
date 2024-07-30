@@ -72,7 +72,7 @@ func (s *service) UpdateItem(id uint, input *CreateOrUpdateItemInput) error {
 	var item Item
 
 	if err := s.db.First(&item, id).Error; err != nil {
-		return fmt.Errorf("Item not found, ID: %d", id)
+		return fmt.Errorf("Item not found, ID: %d, details: %s", id, err.Error())
 	}
 
 	if err := s.db.Model(&item).Updates(*input).Error; err != nil {

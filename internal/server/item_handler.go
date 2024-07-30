@@ -2,8 +2,11 @@ package server
 
 import (
 	"backend/internal/database"
+	"errors"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 var validate = validator.New()
@@ -11,7 +14,7 @@ var validate = validator.New()
 func (s *FiberServer) CreateItemHandler(c *fiber.Ctx) error {
 	input := database.CreateOrUpdateItemInput{}
 
-	if err := c.BodyParser(input); err != nil {
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -48,6 +51,9 @@ func (s *FiberServer) GetItemHandler(c *fiber.Ctx) error {
 	res, err := s.db.GetItem(uint(ID))
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": err.Error()})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -63,7 +69,7 @@ func (s *FiberServer) UpdateItemHandler(c *fiber.Ctx) error {
 
 	input := database.CreateOrUpdateItemInput{}
 
-	if err := c.BodyParser(input); err != nil {
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 

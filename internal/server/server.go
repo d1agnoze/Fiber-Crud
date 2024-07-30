@@ -4,6 +4,7 @@ import (
 	"backend/internal/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 type FiberServer struct {
@@ -23,6 +24,7 @@ func New() *FiberServer {
 	}
 
 	server.App.Use(cors.New())
+	server.App.Use(logger.New())
 	server.db.Migrate()
 
 	return server
